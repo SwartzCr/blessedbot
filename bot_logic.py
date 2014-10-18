@@ -21,9 +21,9 @@ def dump(queue, info):
 
 def respond(twitter, top_tweet):
     text = top_tweet["text"]
-# remove all opther hash tags
-
-    twitter.update_status(status="@%s Oh, I can believe it!")
+# remove all hash tags
+    text = text.split("#")[0] + "#BLESSED"
+    twitter.update_status(status=text)
 
 
 def main():
@@ -32,11 +32,12 @@ def main():
     tweets = twitter.search(q="#fml", result_type="recent", since_id=info["sinceid"], count='100')
     info["sinceid"] = tweets["search_metadata"]["max_id"]
     triggers = ("#fml", "#FML")
-    to_add = [tweet for tweet in tweets["statuses"] if not tweet["retweeted"] and not tweet.has_key("retweeted_status")]
+    to_add = [tweet for tweet in tweets["statuses"] if not tweet["retweeted"] and 
+                                                       not tweet.has_key("retweeted_status") and
+                                                       not tweet["in_reply_to_status_id"] and
+                                                       tweet["entities"]["urls"] == []]
     to_add = [tweet for tweet in to_add if "#fml" in tweet["text"]
-                                        or if "#FML" in tweet["text"]]
-# remove all tweets with links
-# remove all tweets ith ats
+                                        or "#FML" in tweet["text"]]
     queue = queue + to_add
     mx = max(len(to_add), 20)
     if len(queue) > mx:
