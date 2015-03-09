@@ -37,7 +37,8 @@ def main():
                                                        not tweet["in_reply_to_status_id"] and
                                                        tweet["entities"]["urls"] == []]
     to_add = [tweet for tweet in to_add if "#fml" in tweet["text"]
-                                        or "#FML" in tweet["text"]]
+                                        or "#FML" in tweet["text"]
+                                        and "@" not in tweet["text"]]
     queue = queue + to_add
     mx = max(len(to_add), 20)
     if len(queue) > mx:
